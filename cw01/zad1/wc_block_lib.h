@@ -1,0 +1,12 @@
+#ifndef CW01_WC_BLOCK_LIB_H
+#define CW01_WC_BLOCK_LIB_H
+
+typedef struct WcBlock {
+    char** blocks;
+    int max_blocks;
+    int current_block;
+} WcBlock;
+
+WcBlock create_wc_block(int max_blocks);
+
+#endif //CW01_WC_BLOCK_LIB_H
