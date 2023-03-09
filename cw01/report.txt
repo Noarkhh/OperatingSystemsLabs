@@ -1,0 +1,4 @@
+Wyniki w zad3/results.
+Programy działały najszybciej, jeżeli zostały skompilowane z opcją -Os.
+Biblioteka statyczna jest najszybsza, ale nie znacząco.
+Możliwość przeprowadzenia testów poprzez wywołanie make w katalogu zad3.

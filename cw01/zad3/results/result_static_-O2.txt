@@ -1,0 +1,32 @@
+Time Elapsed | Real: 8.697 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 4994.920 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 4836.041 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 5259.056 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 5820.820 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 7428.707 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 5079.144 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+0:   66  210 2014 wc_block_lib.c
+
+Time Elapsed | Real: 1.299 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+1:  17  50 526 wc_block_lib.h
+
+Time Elapsed | Real: 0.478 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+2:  108  348 3139 wc_repl_lib.c
+
+Time Elapsed | Real: 0.388 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+3:  16  31 346 wc_repl_lib.h
+
+Time Elapsed | Real: 0.374 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+4:  6  9 78 main.c
+
+Time Elapsed | Real: 0.233 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+5:  19  34 392 main_dynamic.c
+
+Time Elapsed | Real: 0.226 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 0.271 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 0.134 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 0.111 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 0.181 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 0.113 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 0.111 [ms] | User: 0.000 [ms] | System: 0.000 [ms]
+Time Elapsed | Real: 1.214 [ms] | User: 0.000 [ms] | System: 0.000 [ms]

@@ -2,10 +2,12 @@
 #include "wc_block_lib.h"
 
 int main() {
-    WcBlock wcBlock = create_wc_block(10);
-    printf("%d\n", wcBlock.max_blocks);
-    printf("%d\n", add_file_wc_to_block(wcBlock, "/tmp/beee"));
-    printf("%s\n", wcBlock.blocks[0]);
-    printf("%d\n", wcBlock.current_block);
+    WcBlocks* wcBlocks = create_wc_block(10);
+    add_wc_output(wcBlocks, "/bin/grep");
+    add_wc_output(wcBlocks, "/bin/ls");
+    add_wc_output(wcBlocks, "/bin/find");
+    print_wc_blocks(wcBlocks);
+    remove_block(wcBlocks, 1);
+    print_wc_blocks(wcBlocks);
   return 0;
 }
