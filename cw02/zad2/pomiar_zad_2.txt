@@ -1,2 +1,2 @@
-block size - 1: 86.658 [ms]
-block size - 1024: 136.806 [ms]
+block size - 1: 177.116 [ms]
+block size - 1024: 299.408 [ms]
