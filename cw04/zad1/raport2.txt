@@ -1,0 +1,3 @@
+Proces potomny dziedziczy sygnały ignorowane, handlery oraz maski, natomiast czyści procesy oczekujące.
+Po wykonaniu funckji exec czyszczone są ustawione handlery, natomiast ignorowane sygnały i maski się nie zmieniają.
+Procesy oczekujące nie są czyszczone.
