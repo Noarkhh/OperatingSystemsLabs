@@ -11,4 +11,4 @@ execinh:
 	$(CC) $(CFLAGS) -o execinheritor execinheritor.c
 
 clean:
-	rm *a *o forkinh execinh
+	rm *a *o forkinh execinh execinheritor
