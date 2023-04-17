@@ -1,0 +1,32 @@
+
+./integral 50000000 1
+result: 3.141592652259178
+elapsed time: 952.808660 [ms]
+
+./integral 50000000 2
+result: 3.141592652259833
+elapsed time: 30.382471 [ms]
+
+./integral 50000000 10
+result: 3.141592652259698
+elapsed time: 14.617863 [ms]
+
+./integral 50000000 100
+result: 3.141592652259737
+elapsed time: 12.795790 [ms]
+
+./integral 700000000 1
+result: 3.141592701964250
+elapsed time: 7018.288621 [ms]
+
+./integral 700000000 2
+result: 3.141592701964388
+elapsed time: 4003.241761 [ms]
+
+./integral 700000000 10
+result: 3.141592701964481
+elapsed time: 1980.341621 [ms]
+
+./integral 700000000 100
+result: 3.141592701964370
+elapsed time: 1966.397613 [ms]
