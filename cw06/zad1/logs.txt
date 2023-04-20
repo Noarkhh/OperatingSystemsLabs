@@ -1,10 +1,16 @@
-============ Thu Apr 20 15:01:06 2023
- ============
-date		type	sender_id	receiver_id	contents
-============ Thu Apr 20 15:01:21 2023
- ============
-date		type	sender_id	receiver_id	contents
-Thu Apr 20 15:01:40 2023
-	5	32792	-1	kuba
-Thu Apr 20 15:01:43 2023
-	2	0	0	
+======================== Thu Apr 20 18:15:56 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 18:16:08 2023	5		16		-1			kuba
+Thu Apr 20 18:16:11 2023	2		0		0			
+Thu Apr 20 18:16:14 2023	5		17		-1			jakub
+Thu Apr 20 18:16:15 2023	2		1		0			
+Thu Apr 20 18:16:19 2023	3		1		-1			siemaaa
+Thu Apr 20 18:17:44 2023	5		18		-1			cubba
+Thu Apr 20 18:17:45 2023	2		2		0			
+Thu Apr 20 18:17:50 2023	3		2		-1			siema tu cubba
+Thu Apr 20 18:25:07 2023	1		1		0			
+Thu Apr 20 18:25:07 2023	1		1		-1			
+Thu Apr 20 18:25:07 2023	1		1		-1			
+Thu Apr 20 18:25:12 2023	2		2		0			
+Thu Apr 20 18:25:24 2023	4		2		1			aaa
+Thu Apr 20 18:25:29 2023	4		2		0			aaa

@@ -1,18 +1,19 @@
 #include "config.h"
 
-key_t server_msq;
-key_t clients_msqs[MAXCLIENTS];
+mqd_t server_queue;
+mqd_t clients_queues[MAXCLIENTS];
 int active_clients_mask[MAXCLIENTS];
 char clients_nicknames[MAXCLIENTS][MAXNICKSIZE];
 
 Message out_message;
 
 int send_to_client(Message* message) {
-    return msgsnd(clients_msqs[message->receiver_id], message, sizeof(Message) - sizeof(long), 0);
+    return mq_send(clients_queues[message->receiver_id], (char*) message, sizeof(Message), message->mtype);
+
 }
 
 long receive_from_client(Message* message) {
-    return msgrcv(server_msq, message, sizeof(Message) - sizeof(long), -10, 0);
+    return mq_receive(server_queue, (char*) message, sizeof(Message), NULL);
 }
 
 void stop(int sig) {
@@ -22,7 +23,9 @@ void stop(int sig) {
             send_to_client(&mes);
         }
     }
-    msgctl(server_msq, IPC_RMID, NULL);
+    mq_close(server_queue);
+    usleep(300);
+    mq_unlink("/server_queue");
     exit(0);
 }
 
@@ -39,12 +42,14 @@ void process_message(Message* in_message) {
         case INIT:
             for (int i = 0; i < MAXCLIENTS; i++) {
                 if (!active_clients_mask[i]) {
-                    clients_msqs[i] = in_message->sender_id;
+                    sprintf(buf, "/client_queue_%d", in_message->sender_id);
+                    mqd_t sender_id = mq_open(buf, O_RDWR);
+                    clients_queues[i] = sender_id;
                     active_clients_mask[i] = 1;
                     strcpy(clients_nicknames[i], in_message->contents);
 
                     out_message = (Message) {INIT_SV, "", -1, i, time(NULL)};
-                    send_to_client(&out_message);
+                    if (send_to_client(&out_message) == -1) perror("send_to_client");
                     break;
                 }
             }
@@ -83,7 +88,19 @@ void process_message(Message* in_message) {
 }
 
 int main() {
-    server_msq = msgget(SERVERID, IPC_CREAT | 0666);
+    struct mq_attr attr = {0, 10, sizeof(Message), 0};
+    server_queue = mq_open("/server_queue", O_RDWR | O_CREAT, 0666, &attr);
+    if (server_queue == -1) {
+        perror("mq_open");
+        mq_close(server_queue);
+        mq_unlink("/server_queue");
+        exit(EXIT_FAILURE);
+    }
+
+    FILE* id_file = fopen("new_id", "w");
+    fprintf(id_file, "100");
+    fclose(id_file);
+
     struct sigaction sa;
     sa.sa_handler = stop;
     sigemptyset(&sa.sa_mask);

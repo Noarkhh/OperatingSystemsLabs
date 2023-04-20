@@ -1,0 +1,84 @@
+======================== Thu Apr 20 20:00:14 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:00:25 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:01:25 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:01:29 2023	5		-1		-1			kuba
+Thu Apr 20 20:01:31 2023	5		4		-1			kuba
+Thu Apr 20 20:03:04 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:03:42 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:03:56 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:06:52 2023 ========================
+date						type	sender	receiver	contents
+======================== Thu Apr 20 20:07:01 2023 ========================
+date						type	sender	receiver	contents
+======================== Thu Apr 20 20:07:09 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:07:12 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:09:15 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:09:25 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:10:30 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:10:38 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:11:59 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:12:02 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:13:26 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:13:29 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:15:56 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:16:04 2023	5		-1		-1			kuba
+Thu Apr 20 20:16:13 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:16:31 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:16:34 2023	5		4		-1			kuba
+======================== Thu Apr 20 20:19:51 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:20:31 2023	5		1		-1			kuba
+======================== Thu Apr 20 20:24:11 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:24:15 2023	5		1		-1			kuba
+Thu Apr 20 20:24:45 2023	2		0		0			
+Thu Apr 20 20:24:51 2023	3		0		-1			aaa
+Thu Apr 20 20:25:02 2023	5		1		-1			jakub
+Thu Apr 20 20:25:12 2023	1		0		0			
+Thu Apr 20 20:25:12 2023	1		0		-1			
+Thu Apr 20 20:25:12 2023	1		0		-1			
+======================== Thu Apr 20 20:32:55 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:32:58 2023	5		1		-1			kuba
+======================== Thu Apr 20 20:35:16 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:35:19 2023	5		1		-1			kuba
+======================== Thu Apr 20 20:36:08 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:36:10 2023	5		102		-1			kuba
+Thu Apr 20 20:36:18 2023	2		0		0			
+Thu Apr 20 20:36:24 2023	5		103		-1			jakub
+Thu Apr 20 20:36:27 2023	2		1		0			
+Thu Apr 20 20:36:35 2023	4		1		0			siema
+Thu Apr 20 20:37:27 2023	1		0		0			
+Thu Apr 20 20:37:27 2023	1		0		-1			
+Thu Apr 20 20:37:27 2023	1		0		-1			
+Thu Apr 20 20:37:30 2023	2		1		0			
+Thu Apr 20 20:37:35 2023	5		104		-1			kuba
+Thu Apr 20 20:37:38 2023	2		0		0			
+======================== Thu Apr 20 20:40:38 2023 ========================
+date						type	sender	receiver	contents
+Thu Apr 20 20:40:42 2023	5		100		-1			kuba
+Thu Apr 20 20:40:56 2023	5		101		-1			jakub
+Thu Apr 20 20:40:59 2023	2		1		0			
+Thu Apr 20 20:41:23 2023	5		102		-1			cubba
+Thu Apr 20 20:41:25 2023	2		2		0			
+Thu Apr 20 20:41:31 2023	3		2		-1			ja cubba
+Thu Apr 20 20:42:17 2023	2		1		0			
+Thu Apr 20 20:42:42 2023	4		1		2			hej hej sjedz se klej
+Thu Apr 20 20:43:04 2023	1		0		0			
+Thu Apr 20 20:43:04 2023	1		0		-1			
+Thu Apr 20 20:43:04 2023	1		0		-1			
+Thu Apr 20 20:43:08 2023	2		1		0			
+Thu Apr 20 20:43:19 2023	5		103		-1			kubak
+Thu Apr 20 20:43:23 2023	2		1		0			
