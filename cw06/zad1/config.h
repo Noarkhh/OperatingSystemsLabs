@@ -14,8 +14,9 @@
 #include <errno.h>
 
 #define SERVERID 21
-#define MSGCNTSIZE 256
+#define MAXMSGSIZE 1028
 #define MAXCLIENTS 128
+#define MAXNICKSIZE 32
 
 enum ClientCommand {
     ZERO, STOP, LIST, TO_ALL, TO_ONE, INIT
@@ -27,7 +28,7 @@ enum ServerCommand {
 
 typedef struct Message {
     long mtype;
-    char contents[MSGCNTSIZE];
+    char contents[MAXMSGSIZE];
     int sender_id;
     int receiver_id;
     time_t time;

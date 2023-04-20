@@ -3,6 +3,8 @@
 key_t server_msq;
 key_t client_msq;
 
+pid_t poller_pid;
+
 int id = -1;
 
 int send_to_server(Message* message) {
@@ -13,30 +15,58 @@ long receive_from_server(Message* message, long type) {
     return msgrcv(client_msq, message, sizeof(Message) - sizeof(long), type, 0);
 }
 
-void init() {
+void handle_new_message() {
+    Message mes;
+    receive_from_server(&mes, -20);
+    switch (mes.mtype) {
+        case STOP_SV:
+            printf("\rServer stopped.\n");
+            kill(getppid(), SIGINT);
+            break;
+        case MSG_SV:
+            printf("\r%sNew message from %d:\n%s\n", ctime(&mes.time), mes.sender_id, mes.contents);
+            break;
+        case LIST_SV:
+            printf("\r === LIST OF CLIENTS ===\n%s\n", mes.contents);
+            break;
+    }
+}
+
+void stop(int sig) {
+    msgctl(client_msq, IPC_RMID, NULL);
+    Message mes = {STOP, "", id, -1, time(NULL)};
+    send_to_server(&mes);
+    kill(poller_pid, SIGINT);
+    exit(0);
+}
+
+void init(char* nickname) {
     server_msq = msgget(SERVERID, 0);
     client_msq = msgget(IPC_PRIVATE, IPC_CREAT | 0666);
-    Message message = {INIT, "aa", client_msq, 0, time(NULL)};
+    Message message = {INIT, "", client_msq, -1, time(NULL)};
+    strcpy(message.contents, nickname);
     if (send_to_server(&message) == -1) {
         perror("initializing");
         exit(EXIT_FAILURE);
     }
-    Message response = {INIT, "aa", client_msq, 0, time(NULL)};
-    printf("sent %d %lu\n", client_msq, sizeof(message));
-    sleep(2);
+    Message response = {};
     if (receive_from_server(&response, -10) == -1) {
         perror("receiving initialization response");
         exit(EXIT_FAILURE);
     }
-    perror("");
-    printf("%ld, %s, %d, %d\n", response.mtype, response.contents, response.sender_id, response.receiver_id);
     id = response.receiver_id;
-    printf("%d\n", id);
-}
 
+    struct sigaction sa;
+    sa.sa_handler = stop;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    sigaction(SIGINT, &sa, NULL);
+}
 
 int execute_command(char* cmd, char* args) {
     char* ptr;
+    char* token;
 
     if (!cmd) {
         return 2;
@@ -44,28 +74,44 @@ int execute_command(char* cmd, char* args) {
     if (strcmp(cmd, "LIST") == 0) {
         Message mes = {LIST, "", id, 0, time(NULL)};
         send_to_server(&mes);
-//        receive_from_server(&mes, LIST_SV);
-//        printf("%s", mes.contents);
         return 0;
 
     } else if (strcmp(cmd, "2ALL") == 0) {
-        if (strlen(args) > MSGCNTSIZE) {
+        if (strlen(args) > MAXMSGSIZE) {
             fprintf(stderr, "message too long\n");
             return -1;
         }
-        Message mes = {TO_ALL, "", id, 0, time(NULL)};
-        strcpy(mes.contents, args);
+        token = args;
+        if (token == NULL) {
+            fprintf(stderr, "empty message\n");
+            return -1;
+        }
+        Message mes = {TO_ALL, "", id, -1, time(NULL)};
+        while (token != NULL) {
+            strcat(mes.contents, token);
+            token = strtok(NULL, " \n");
+            if (token != NULL) strcat(mes.contents, " ");
+        }
         send_to_server(&mes);
         return 0;
 
     } else if (strcmp(cmd, "2ONE") == 0) {
         int receiver_id = (int) strtol(args, &ptr, 10);
-        if (receiver_id < 0 || receiver_id > MAXCLIENTS) {
+        if (receiver_id < 0 || receiver_id > MAXCLIENTS || strcmp(ptr, "") != 0) {
             fprintf(stderr, "bad receiver id\n");
             return -1;
         }
+        token = strtok(NULL, " \n");
+        if (token == NULL) {
+            fprintf(stderr, "empty message\n");
+            return -1;
+        }
         Message mes = {TO_ONE, "", id, receiver_id, time(NULL)};
-        strcpy(mes.contents, ptr);
+        while (token != NULL) {
+            strcat(mes.contents, token);
+            token = strtok(NULL, " \n");
+            if (token != NULL) strcat(mes.contents, " ");
+        }
         send_to_server(&mes);
         return 0;
 
@@ -76,6 +122,7 @@ int execute_command(char* cmd, char* args) {
         }
         Message mes = {STOP, "", id, 0, time(NULL)};
         send_to_server(&mes);
+        raise(SIGINT);
     } else {
         fprintf(stderr, "invalid command\n");
         return -1;
@@ -83,33 +130,45 @@ int execute_command(char* cmd, char* args) {
     return 0;
 }
 
+void listen_to_messages() {
+    struct msqid_ds queue_info;
+    while(1) {
+        msgctl(client_msq, IPC_STAT, &queue_info);
+        if (queue_info.msg_qnum > 0) {
+            handle_new_message();
+        }
+        usleep(10);
+    }
+}
+
 
 void chat_loop() {
     char buffer[50];
     char* cmd;
     char* args;
-
     printf("]>> ");
     while (fgets(buffer, 50, stdin)) {
         cmd = strtok(buffer, " \n");
         if (cmd != NULL) args = strtok(NULL, " \n");
         execute_command(cmd, args);
-        struct msqid_ds queue_info;
-        msgctl(client_msq, IPC_STAT, &queue_info);
-        Message mes;
-        usleep(1000);
-        while (queue_info.msg_qnum > 0) {
-            receive_from_server(&mes, -20);
-            printf("%s", mes.contents);
-
-            msgctl(client_msq, IPC_STAT, &queue_info);
-        }
+        usleep(300);
         printf("]>> ");
     }
 }
 
-int main() {
-    init();
+int main(int argc, char** argv) {
+    if (argc > 2) {
+        fprintf(stderr, "bad arguments\n");
+        return 1;
+    }
+    if (strlen(argv[1]) > MAXNICKSIZE) {
+        fprintf(stderr, "nickname too long\n");
+        return 1;
+    }
+    init(argv[1]);
+    if ((poller_pid = fork()) == 0) {
+        listen_to_messages();
+    }
     chat_loop();
 
     return 0;
