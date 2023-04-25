@@ -161,11 +161,11 @@ int main(int argc, char** argv) {
         fprintf(stderr, "bad arguments\n");
         return 1;
     }
-    if (strlen(argv[1]) > MAXNICKSIZE) {
+    if (argc == 2 && strlen(argv[1]) > MAXNICKSIZE) {
         fprintf(stderr, "nickname too long\n");
         return 1;
     }
-    init(argv[1]);
+    init(argc == 2 ? argv[1] : "");
     if ((poller_pid = fork()) == 0) {
         listen_to_messages();
     }

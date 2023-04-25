@@ -14,3 +14,26 @@ Thu Apr 20 18:25:07 2023	1		1		-1
 Thu Apr 20 18:25:12 2023	2		2		0			
 Thu Apr 20 18:25:24 2023	4		2		1			aaa
 Thu Apr 20 18:25:29 2023	4		2		0			aaa
+======================== Tue Apr 25 13:00:51 2023 ========================
+date						type	sender	receiver	contents
+======================== Tue Apr 25 13:02:48 2023 ========================
+date						type	sender	receiver	contents
+Tue Apr 25 13:02:52 2023	5		2		-1			kuba
+Tue Apr 25 13:02:54 2023	2		0		0			
+Tue Apr 25 13:03:06 2023	5		3		-1			jakub
+Tue Apr 25 13:03:07 2023	2		1		0			
+Tue Apr 25 13:03:14 2023	4		1		0			siema kuba
+Tue Apr 25 13:03:28 2023	1		0		-1			
+Tue Apr 25 13:03:28 2023	1		0		-1			
+Tue Apr 25 13:03:34 2023	2		1		0			
+======================== Tue Apr 25 13:04:33 2023 ========================
+date						type	sender	receiver	contents
+Tue Apr 25 13:04:47 2023	5		5		-1			kuba
+Tue Apr 25 13:04:50 2023	1		0		-1			
+Tue Apr 25 13:04:50 2023	1		0		-1			
+======================== Tue Apr 25 13:06:24 2023 ========================
+date						type	sender	receiver	contents
+Tue Apr 25 13:06:27 2023	5		7		-1			
+Tue Apr 25 13:06:29 2023	2		0		0			
+Tue Apr 25 13:06:38 2023	1		0		-1			
+Tue Apr 25 13:06:38 2023	1		0		-1			
