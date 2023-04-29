@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/types.h>
+#include <semaphore.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/sem.h>
 #include <sys/shm.h>
@@ -43,7 +44,7 @@ typedef struct Seat {
 typedef struct Seats {
     int total;
     int free;
-    int sem;
+    sem_t* sem;
     Seat elems[SEATS];
 } Seats;
 
@@ -52,7 +53,7 @@ typedef struct Queue {
     int head;
     int tail;
     int size;
-    int sem;
+    sem_t* sem;
     Person elems[BARBERS + WAITING];
 } Queue;
 
@@ -183,7 +184,6 @@ void stop(int pid) {
     kill(coordinator_pid, SIGINT);
     kill(generator_pid, SIGINT);
     exit(0);
-
 }
 
 
@@ -206,6 +206,7 @@ int main() {
     for (int i = 0; i < SEATS; i++) {
         seats->elems[i].is_empty = 1;
     }
+    seats->sem = semget(IPC_PRIVATE, 1, IPC_CREAT | 0666);
     seats->sem = semget(IPC_PRIVATE, 1, IPC_CREAT | 0666);
     semctl(seats->sem, 0, SETVAL, 1);
 
