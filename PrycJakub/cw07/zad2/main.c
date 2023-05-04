@@ -61,15 +61,10 @@ typedef struct Queue {
 } Queue;
 
 Queue* barber_queue;
-int barber_queue_shmid;
-Queue* client_queue;
-int client_queue_shmid;
-Seats* seats;
-int seats_shmid;
 Barber* barbers;
-int barbers_shmid;
-
 sem_t* barber_sems[BARBERS];
+Queue* client_queue;
+Seats* seats;
 
 int dec(sem_t* sem) {
     return sem_wait(sem);
@@ -202,10 +197,6 @@ void stop(int pid) {
     sem_close(seats->sem);
     sem_unlink("seats_sem");
 
-    shmctl(barber_queue_shmid, IPC_RMID, NULL);
-    shmctl(client_queue_shmid, IPC_RMID, NULL);
-    shmctl(barbers_shmid, IPC_RMID, NULL);
-    shmctl(seats_shmid, IPC_RMID, NULL);
     exit(0);
 }
 
@@ -214,19 +205,14 @@ int main() {
     srand(time(NULL));
 
     signal(SIGINT, stop);
-    barber_queue_shmid = shmget(IPC_PRIVATE, sizeof(Queue), IPC_CREAT | 0666);
-    barber_queue = (Queue*) shmat(barber_queue_shmid, NULL, 0);
+    barber_queue = (Queue*) shmat(shmget(IPC_PRIVATE, sizeof(Queue), IPC_CREAT | 0666), NULL, 0);
     qinit(barber_queue, BARBERS + WAITING, BARBERQID);
+    barbers = (Barber*) shmat(shmget(IPC_PRIVATE, sizeof(Barber) * BARBERS, IPC_CREAT | 0666), NULL, 0);
 
-    barbers_shmid = shmget(IPC_PRIVATE, sizeof(Barber) * BARBERS, IPC_CREAT | 0666);
-    barbers = (Barber*) shmat(barbers_shmid, NULL, 0);
-
-    client_queue_shmid = shmget(IPC_PRIVATE, sizeof(Queue), IPC_CREAT | 0666);
-    client_queue = (Queue*) shmat(client_queue_shmid, NULL, 0);
+    client_queue = (Queue*) shmat(shmget(IPC_PRIVATE, sizeof(Queue), IPC_CREAT | 0666), NULL, 0);
     qinit(client_queue, BARBERS + WAITING, CLIENTQID);
 
-    seats_shmid = shmget(IPC_PRIVATE, sizeof(Seats), IPC_CREAT | 0666);
-    seats = (Seats*) shmat(seats_shmid, NULL, 0);
+    seats = (Seats*) shmat(shmget(IPC_PRIVATE, sizeof(Seats), IPC_CREAT | 0666), NULL, 0);
     seats->total = SEATS;
     seats->free = SEATS;
     for (int i = 0; i < SEATS; i++) {

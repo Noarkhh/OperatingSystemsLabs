@@ -3,18 +3,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <semaphore.h>
-#include <fcntl.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/sem.h>
 #include <sys/shm.h>
+#include <sys/mman.h>
 #include <string.h>
 #include <signal.h>
 #include <time.h>
 #include <errno.h>
-
-#define BARBERQID 0
-#define CLIENTQID 1
+#include <fcntl.h>
 
 #define BARBERS 5
 #define SEATS 3
@@ -47,7 +45,7 @@ typedef struct Seat {
 typedef struct Seats {
     int total;
     int free;
-    sem_t* sem;
+    int sem;
     Seat elems[SEATS];
 } Seats;
 
@@ -56,7 +54,7 @@ typedef struct Queue {
     int head;
     int tail;
     int size;
-    sem_t* sem;
+    int sem;
     Person elems[BARBERS + WAITING];
 } Queue;
 
@@ -66,52 +64,53 @@ Queue* client_queue;
 int client_queue_shmid;
 Seats* seats;
 int seats_shmid;
+
 Barber* barbers;
 int barbers_shmid;
+int barber_sems;
 
-sem_t* barber_sems[BARBERS];
-
-int dec(sem_t* sem) {
-    return sem_wait(sem);
+int dec(int semid, unsigned short semnum, short sem_flg) {
+    struct sembuf buf = {semnum, -1, sem_flg};
+    return semop(semid, &buf, 1);
 }
 
-int inc(sem_t* sem) {
-    return sem_post(sem);
+int inc(int semid, unsigned short semnum, short sem_flg) {
+    struct sembuf buf = {semnum, 1, sem_flg};
+    return semop(semid, &buf, 1);
 }
 
-void qinit(Queue* q, int size, int id) {
+void qinit(Queue* q, int size) {
     q->cap = size;
     q->head = 0;
     q->tail = 0;
     q->size = 0;
-    char buf[15];
-    sprintf(buf, "queue_sem_%d", id);
-    q->sem = sem_open(buf, O_CREAT | 0666, O_RDWR, 1);
+    q->sem = semget(IPC_PRIVATE, 1, IPC_CREAT | 0666);
+    semctl(q->sem, 0, SETVAL, 1);
 }
 
 int qput(Queue* q, Person person) {
-    dec(q->sem);
+    dec(q->sem, 0, 0);
     if (q->size == q->cap) {
-        inc(q->sem);
+        inc(q->sem, 0, 0);
         return -1;
     }
     q->elems[q->head] = person;
     q->head = (q->head + 1) % q->cap;
     q->size++;
-    inc(q->sem);
+    inc(q->sem, 0, 0);
     return 0;
 }
 
 Person qget(Queue* q) {
-    dec(q->sem);
+    dec(q->sem, 0, 0);
     if (q->size == 0) {
-        inc(q->sem);
+        inc(q->sem, 0, 0);
         return *(volatile Person*) NULL;
     }
     Person p = q->elems[q->tail];
     q->tail = (q->tail + 1) % q->cap;
     q->size--;
-    inc(q->sem);
+    inc(q->sem, 0, 0);
     return p;
 }
 
@@ -123,20 +122,20 @@ void qprint(Queue* q) {
 void barber_process(int id, Barber barber) {
     qput(barber_queue, (Person) barber);
     while (1) {
-        dec(barber_sems[id]);
+        dec(barber_sems, id, 0);
         printf("barber %d woke up! Currently on seat %d servicing client %d with hairstyle %d\n", id, barbers[id].seat, seats->elems[barbers[id].seat].client.id, seats->elems[barbers[id].seat].client.hairstyle);
         sleep(seats->elems[barbers[id].seat].client.hairstyle);
         printf("barber %d finished barbing client %d and is going back to sleep\n", id, seats->elems[barbers[id].seat].client.id);
         qput(barber_queue, (Person) barber);
-        dec(seats->sem);
+        dec(seats->sem, 0, 0);
         seats->elems[barbers[id].seat].is_empty = 1;
         seats->free++;
-        inc(seats->sem);
+        inc(seats->sem, 0, 0);
     }
 }
 
 void wake_barber(int id) {
-    inc(barber_sems[id]);
+    inc(barber_sems, id, 0);
 }
 
 void coordinator_process() {
@@ -151,7 +150,7 @@ void coordinator_process() {
         for (int i = 0; i < SEATS; i++) {
             if (!seats->elems[i].is_empty) continue;
 //            printf("coordinator: assigning barber %d to client %d\n", barber->id, client.id);
-            dec(seats->sem);
+            dec(seats->sem, 0, 0);
             seats->elems[i].is_empty = 0;
 
             barber->seat = i;
@@ -160,7 +159,7 @@ void coordinator_process() {
             client.seat = i;
             seats->elems[i].client = client;
             seats->free--;
-            inc(seats->sem);
+            inc(seats->sem, 0, 0);
             wake_barber(barber->id);
             break;
         }
@@ -172,7 +171,6 @@ void client_generator_process() {
     while (1) {
         sleep(1);
         if (rand() % 2 == 1) {
-//            printf("creating %d\n", client_id);
             Client c = {client_id, rand() % HAIRSTYLES + 1, -1};
             qput(client_queue, (Person) c);
             client_id++;
@@ -186,27 +184,22 @@ pid_t generator_pid;
 
 void stop(int pid) {
 
-    char buf[15];
     for (int i = 0; i < BARBERS; i++) {
         kill(barber_pids[i], SIGINT);
-        sem_close(barber_sems[i]);
-        sprintf(buf, "barber_%d", i);
-        sem_unlink(buf);
+        semctl(barber_sems, i, IPC_RMID);
     }
     kill(coordinator_pid, SIGINT);
     kill(generator_pid, SIGINT);
-    sem_close(barber_queue->sem);
-    sem_unlink("queue_sem_0");
-    sem_close(client_queue->sem);
-    sem_unlink("queue_sem_1");
-    sem_close(seats->sem);
-    sem_unlink("seats_sem");
+    semctl(barber_queue->sem, 0, IPC_RMID);
+    semctl(client_queue->sem, 0, IPC_RMID);
+    semctl(seats->sem, 0, IPC_RMID);
 
     shmctl(barber_queue_shmid, IPC_RMID, NULL);
     shmctl(client_queue_shmid, IPC_RMID, NULL);
     shmctl(barbers_shmid, IPC_RMID, NULL);
     shmctl(seats_shmid, IPC_RMID, NULL);
     exit(0);
+
 }
 
 
@@ -214,16 +207,18 @@ int main() {
     srand(time(NULL));
 
     signal(SIGINT, stop);
+
+
     barber_queue_shmid = shmget(IPC_PRIVATE, sizeof(Queue), IPC_CREAT | 0666);
     barber_queue = (Queue*) shmat(barber_queue_shmid, NULL, 0);
-    qinit(barber_queue, BARBERS + WAITING, BARBERQID);
+    qinit(barber_queue, BARBERS + WAITING);
 
     barbers_shmid = shmget(IPC_PRIVATE, sizeof(Barber) * BARBERS, IPC_CREAT | 0666);
     barbers = (Barber*) shmat(barbers_shmid, NULL, 0);
 
     client_queue_shmid = shmget(IPC_PRIVATE, sizeof(Queue), IPC_CREAT | 0666);
     client_queue = (Queue*) shmat(client_queue_shmid, NULL, 0);
-    qinit(client_queue, BARBERS + WAITING, CLIENTQID);
+    qinit(client_queue, BARBERS + WAITING);
 
     seats_shmid = shmget(IPC_PRIVATE, sizeof(Seats), IPC_CREAT | 0666);
     seats = (Seats*) shmat(seats_shmid, NULL, 0);
@@ -232,12 +227,14 @@ int main() {
     for (int i = 0; i < SEATS; i++) {
         seats->elems[i].is_empty = 1;
     }
-    seats->sem = sem_open("seats_sem", O_CREAT | 0666, O_RDWR, 1);
+    seats->sem = semget(IPC_PRIVATE, 1, IPC_CREAT | 0666);
+    semctl(seats->sem, 0, SETVAL, 1);
 
-    char buf[13];
+    barber_sems = semget(IPC_PRIVATE, BARBERS, IPC_CREAT | 0666);
+
     for (int i = 0; i < BARBERS; i++) {
-        sprintf(buf, "barber_%d", i);
-        barber_sems[i] = sem_open(buf, O_CREAT | 0666, O_RDWR, 0);
+
+        semctl(barber_sems, i, SETVAL, 0);
         barber_pids[i] = fork();
         if (barber_pids[i] == 0) {
             Barber barber = {i, -1};
