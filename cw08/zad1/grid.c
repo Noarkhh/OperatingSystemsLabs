@@ -2,7 +2,7 @@
 
 
 const int grid_width = GRIDWIDTH;
-const int grid_height = GRIDHEIGTH;
+const int grid_height = GRIDHEIGHT;
 
 char *create_grid()
 {
@@ -87,20 +87,19 @@ bool is_alive(int row, int col, char *grid)
 void* update_cell(void* args_void) {
     UpdateCellArgs* args = (UpdateCellArgs*) args_void;
     while (1) {
-        printf("going to sleep...\n");
         pause();
-        printf("unpaused!\n");
         args->dst[args->i * grid_width + args->j] = is_alive(args->i, args->j, args->src);
+        char* tmp = args->src;
+        args->src = args->dst;
+        args->dst = tmp;
     }
     return NULL;
 }
 
 void update_grid(char *src, char *dst, pthread_t* threads) {
-    for (int i = 0; i < GRIDHEIGTH * GRIDWIDTH; i++) {
+    for (int i = 0; i < GRIDHEIGHT * GRIDWIDTH; i++) {
         pthread_kill(threads[i], SIGUSR1);
     }
 }
 
-void unpause(int sig) {
-
-}
+void unpause(int sig) {}

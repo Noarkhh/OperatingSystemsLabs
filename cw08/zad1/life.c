@@ -16,19 +16,23 @@ int main()
 	char *foreground = create_grid();
 	char *background = create_grid();
 	char *tmp;
+    init_grid(foreground);
 
     signal(SIGUSR1, unpause);
-    pthread_t* threads = malloc(sizeof(pthread_t) * GRIDHEIGTH * GRIDWIDTH);
-    UpdateCellArgs args = {0, 0, foreground, background};
-    for (int i = 0; i < GRIDHEIGTH; ++i) {
+    pthread_t* threads = malloc(sizeof(pthread_t) * GRIDHEIGHT * GRIDWIDTH);
+//    UpdateCellArgs args = {0, 0, foreground, background};
+    for (int i = 0; i < GRIDHEIGHT; ++i) {
         for (int j = 0; j < GRIDWIDTH; ++j) {
-            args.i = i;
-            args.j = j;
-            pthread_create(&threads[i * GRIDWIDTH + j], NULL, update_cell, (void*) &args);
+            UpdateCellArgs* args = malloc(sizeof(UpdateCellArgs));
+//            UpdateCellArgs args = {0, 0, foreground, background};
+            args->i = i;
+            args->j = j;
+            args->src = foreground;
+            args->dst = background;
+            pthread_create(&threads[i * GRIDWIDTH + j], NULL, update_cell, (void*) args);
         }
     }
 
-	init_grid(foreground);
 
 	while (true)
 	{

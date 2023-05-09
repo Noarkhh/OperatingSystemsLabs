@@ -8,13 +8,13 @@
 #include <signal.h>
 
 #define GRIDWIDTH 30
-#define GRIDHEIGTH 30
+#define GRIDHEIGHT 30
 
 typedef struct UpdateCellArgs {
     int i;
     int j;
-    char *src;
-    char *dst;
+    char* src;
+    char* dst;
 } UpdateCellArgs;
 
 char *create_grid();
