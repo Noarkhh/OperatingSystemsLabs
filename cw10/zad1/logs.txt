@@ -1,0 +1,25 @@
+======================== Tue Jun 13 01:31:34 2023 ========================
+date						type	sender	receiver	contents
+Tue Jun 13 01:31:41 2023	5		-1		-1			jakub
+Tue Jun 13 01:31:45 2023	2		0		0			
+Tue Jun 13 01:32:20 2023	5		-1		-1			kuba
+Tue Jun 13 01:32:22 2023	2		1		0			
+Tue Jun 13 01:32:27 2023	3		1		-1			seima
+Tue Jun 13 01:32:41 2023	3		0		-1			siema
+Tue Jun 13 01:32:51 2023	4		0		1			siema kuba
+Tue Jun 13 01:33:04 2023	4		0		0			siema kuba?
+======================== Tue Jun 13 01:36:06 2023 ========================
+date						type	sender	receiver	contents
+Tue Jun 13 01:36:11 2023	5		-1		-1			jakub
+Tue Jun 13 01:36:15 2023	2		0		0			
+Tue Jun 13 01:36:20 2023	5		-1		-1			kuba
+Tue Jun 13 01:36:22 2023	2		1		0			
+Tue Jun 13 01:36:25 2023	3		1		-1			siema
+Tue Jun 13 01:36:31 2023	2		0		0			
+Tue Jun 13 01:36:42 2023	4		0		1			czesc kuba :)
+Tue Jun 13 01:36:59 2023	1		1		0			
+Tue Jun 13 01:36:59 2023	1		1		-1			
+Tue Jun 13 01:36:59 2023	1		1		-1			
+Tue Jun 13 01:37:03 2023	2		0		0			
+Tue Jun 13 01:37:06 2023	1		0		-1			
+Tue Jun 13 01:37:06 2023	1		0		-1			
